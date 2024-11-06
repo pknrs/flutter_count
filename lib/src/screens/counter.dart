@@ -1,63 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_count/src/models/counter_model.dart';
+import 'package:provider/provider.dart';
 
-class Counter extends StatefulWidget {
+class Counter extends StatelessWidget {
   const Counter({super.key, required this.title});
 
   final String title;
-
-  @override
-  State<Counter> createState() => _CounterState();
-}
-
-class _CounterState extends State<Counter> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  void _decrementCounter() {
-    setState(() {
-      _counter--;
-    });
-  }
-
-  void _resetCounter() {
-    setState(() {
-      _counter = 0;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            CountText(counter: _counter),
+            Consumer<CounterModel>(
+              builder: (context, counterModel, child) =>
+                  CountText(counter: counterModel.value),
+            ),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: _incrementCounter,
+                  onPressed: () => context.read<CounterModel>().increment(),
                   child: const Icon(Icons.add),
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton(
-                  onPressed: _decrementCounter,
+                  onPressed: () => context.read<CounterModel>().decrement(),
                   child: const Icon(Icons.remove),
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton(
-                  onPressed: _resetCounter,
+                  onPressed: () => context.read<CounterModel>().reset(),
                   child: const Icon(Icons.restore_rounded),
                 ),
               ],
@@ -72,10 +52,10 @@ class _CounterState extends State<Counter> {
 class CountText extends StatelessWidget {
   const CountText({
     super.key,
-    required int counter,
-  }) : _counter = counter;
+    required this.counter,
+  });
 
-  final int _counter;
+  final int counter;
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +64,7 @@ class CountText extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Text(
-          '$_counter',
+          '$counter',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
       ),
